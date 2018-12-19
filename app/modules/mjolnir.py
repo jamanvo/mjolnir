@@ -11,34 +11,29 @@ class Mjolnir:
         try:
             self.url = url
             self.key = url.split('/')[-1]
-            self.response = self._parse_response_type_(response)
+            self.response = self._parse_response_type(response)
         except AttributeError:
             print(traceback.format_exc())
 
-    def _parse_response_type_(self, response):
+    @staticmethod
+    def _parse_response_type(response):
         result = {}
+        res_type = response
+
+        if isinstance(res_type, list):
+            response = response[0]
+
         keys = response.keys()
+
         for key in keys:
             if isinstance(response[key], list) or isinstance(response[key], dict):
-                result[key] = self._parse_response_type_(response[key])
+                result[key] = Mjolnir._parse_response_type(response[key])
             else:
                 result[key] = type(response[key])
 
         # response type setting
-        return result
+        return [result] if isinstance(res_type, list) else result
 
-
-class Hammer:
     @staticmethod
-    def compare_type(ctrl, exp):
-        result = {}
-        exp_keys = exp.keys()
-
-        for ek in exp_keys:
-            try:
-                if isinstance(exp[ek], type(ctrl[ek])):
-                    result[ek] = True
-                else:
-                    result[ek] = False
-            except KeyError:
-                result[ek] = None
+    def _compare_type(ctrl, exp):
+        return type(ctrl) == type(exp)

@@ -1,10 +1,25 @@
 import json
 
-from app.modules.mjolnir import Mjolnir, Hammer
+from app.modules.mjolnir import Mjolnir
 
 
 # test dataset
-json_string = '''
+ctrl_dict = {
+                "result": {
+                    "user": {
+                        "id": int,
+                        "name": str
+                    },
+                    "milecards": [
+                        {
+                            "id": int,
+                            "current_mile": int
+                        }
+                    ]
+                }
+            }
+
+exp_json = '''
     {
         "result": { 
             "user": {
@@ -25,19 +40,19 @@ json_string = '''
     }
 '''
 
-res_json = json.dumps(json_string)
+exp_dict = json.loads(exp_json)
+
 
 # test Mjolnir
-# test __init__(url, response)
-def test__init__():
-    url = "test.com/test"
-    response = {}
-    Mjolnir.__init__()
-
 # test _parse_response_type_(response)
-def test_parse_response_type_():
-    req = {"key": "val"}
-    result = {"key": type("val")}
+def test_compare_type():
+    ctrl = 1
+    exp = 2
 
-    assert Mjolnir._parse_response_type_(req) == result
+    assert Mjolnir._compare_type(ctrl, exp) is True
 
+
+def test_parse_response_type():
+    result = Mjolnir._parse_response_type(exp_dict)
+
+    assert result == ctrl_dict
