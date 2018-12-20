@@ -1,7 +1,6 @@
 import json
 
-from app.modules.mjolnir import Mjolnir
-
+from modules import hammer
 
 # test dataset
 ctrl_dict = {
@@ -40,19 +39,41 @@ exp_json = '''
     }
 '''
 
+result_dict = {
+            "result": {
+                "user": {
+                    "id": True,
+                    "name": True
+                },
+                "milecards": [
+                    {
+                        "id": True,
+                        "current_mile": True
+                    }
+                ]
+            }
+        }
+
 exp_dict = json.loads(exp_json)
 
 
 # test Mjolnir
+
 # test _parse_response_type_(response)
 def test_compare_type():
     ctrl = 1
     exp = 2
 
-    assert Mjolnir._compare_type(ctrl, exp) is True
+    assert hammer.compare_type(ctrl, exp) == True
 
 
 def test_parse_response_type():
-    result = Mjolnir._parse_response_type(exp_dict)
+    result = hammer.parse_response_type(exp_dict)
 
     assert result == ctrl_dict
+
+def test_compare_response():
+    exp = hammer.parse_response_type(exp_dict)
+    result = hammer.compare_responses(ctrl_dict, exp)
+
+    assert result == result_dict
