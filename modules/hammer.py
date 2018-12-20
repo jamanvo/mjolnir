@@ -1,5 +1,14 @@
 # -*- coding: utf-8 -*-
+import requests
 
+
+# start to compare
+def smash(url, ctrl):
+    return
+
+# call api
+def call_api(url, params):
+    return
 
 def call_thunder(ctrl, exp):
     ctrl_group = parse_response_type(ctrl)

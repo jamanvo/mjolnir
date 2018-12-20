@@ -21,16 +21,17 @@
             <div class="message col-md-12"></div>
         </div>
         <div class="json-container col-md-12">
-            <div class="json-title">
-                <span class="res-title col-md-6">Control Group</span>
-                <span class="res-title col-md-6">Experiment Group(API Response)</span>
+            <div class="json-box pull-left">
+                <div class="json-title col-md-12">API Arguments</div>
+                <textarea class="json-area col-md-12" id="args" placeholder="Insert JSON arguments"></textarea>
             </div>
-            <div class="json-group pull-left">
-                <textarea class="json-area" id="ctrl-group" placeholder="Insert JSON to comparison"></textarea>
+            <div class="json-box pull-left">
+                <div class="json-title col-md-12">Control Group</div>
+                <textarea class="json-area col-md-12" id="ctrl-group" placeholder="Insert JSON to comparison"></textarea>
             </div>
-            <div class="json-group pull-right">
-                <textarea class="json-area" readonly="readonly"></textarea>
-            </div>
+        </div>
+        <div class="compare-result col-md-12">
+            <textarea class="json-area col-md-12" id="result" placeholder="Compare Result"></textarea>
         </div>
     </div>
 </body>
@@ -38,22 +39,46 @@
 
 <script>
     function sendRequest() {
-        var ctrlGroup = $("#ctrl-group").text();
-        var call_url = $("#url").val();
-        var url = 'http://localhost:5000/smash';
+        let ctrlGroup = $("#ctrl-group").val();
+        let callURL = $("#url").val();
+        let args = $("#args").val();
+        let url = '/smash';
 
-        var args = {
+        checkParams(ctrlGroup, args);
+
+        let params = {
             ctrl_group: ctrlGroup,
-            url: call_url
-        }
+            args: args,
+            url: callURL
+        };
 
         $.ajax({
             type: 'POST',
             url: url,
-            data: args,
+            data: params,
             dataType: 'json'
         })
             .done()
             .fail()
-    };
+    }
+
+    function checkParams(ctrlGroup, args) {
+        if (!IsJsonString(ctrlGroup) || ctrlGroup === '') {
+            alert("Control Group could not parse to JSON");
+            return
+        }
+
+        if (!IsJsonString(args) || args === '') {
+            alert("API Arguments could not parse to JSON");
+        }
+    }
+
+    function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false
+    }
+    return true
+}
 </script>
