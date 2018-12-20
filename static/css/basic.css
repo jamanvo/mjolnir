@@ -1,0 +1,63 @@
+body {
+    padding: 20px;
+}
+
+.header {
+    margin-bottom: 5px;
+    padding: 0 20px 20px 20px;
+    display: flex;
+    align-items: center;
+}
+
+.container {
+    padding: 20px;
+    border: 1px solid gray;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    height: 60vh;
+}
+
+.group-table {
+    border: 1px solid black;
+    margin: 20px;
+}
+
+.input-area {
+    margin-bottom: 20px;
+    height: 50px;
+}
+
+.url-input {
+    height: 40px;
+}
+
+.json-container {
+}
+
+.json-title {
+    font-size: 20px;
+    font-weight: bolder;
+}
+
+.res-title {
+    border: 1px solid gray;
+}
+
+.json-group {
+    width: 50%;
+}
+
+.json-area {
+    width: 100%;
+    height: 200px;
+}
+
+.message {
+    display: none;
+    height: 40px;
+    margin: 15px;
+    padding: 10px 7px;
+    font-size: 16px;
+    font-weight: 600;
+}

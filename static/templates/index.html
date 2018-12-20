@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>API Call Test</title>
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/basic.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="static/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="header col-md-10-">
+        <h1 class="header-title">API Response Checker</h1>
+    </div>
+    <div class="container col-md-12">
+        <div class="input-area">
+            <div class="url col-md-12">
+                <input type="text" class="url-input col-md-9 pull-left" id="url" placeholder="Insert URL to Test">
+                <button type="submit" class="btn btn-default col-md-2 pull-right" onclick="sendRequest()">전송</button>
+            </div>
+            <div class="message col-md-12"></div>
+        </div>
+        <div class="json-container col-md-12">
+            <div class="json-title">
+                <span class="res-title col-md-6">Control Group</span>
+                <span class="res-title col-md-6">Experiment Group(API Response)</span>
+            </div>
+            <div class="json-group pull-left">
+                <textarea class="json-area" id="ctrl-group" placeholder="Insert JSON to comparison"></textarea>
+            </div>
+            <div class="json-group pull-right">
+                <textarea class="json-area" readonly="readonly"></textarea>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    function sendRequest() {
+        var ctrlGroup = $("#ctrl-group").text();
+        var call_url = $("#url").val();
+        var url = 'http://localhost:5000/smash';
+
+        var args = {
+            ctrl_group: ctrlGroup,
+            url: call_url
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: args,
+            dataType: 'json'
+        })
+            .done()
+            .fail()
+    };
+</script>
