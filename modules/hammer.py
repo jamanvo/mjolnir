@@ -1,14 +1,51 @@
 # -*- coding: utf-8 -*-
 import requests
+import json
 
 
 # start to compare
-def smash(url, ctrl):
-    return
+def smash(url, params, ctrl, method):
+    args = json.loads(params) if method == 'post' else {}
+
+    # control data parse
+    ctrl = json.loads(ctrl)
+
+    # call api
+    response = call_api(url, args, method)
+    # set api response to experiment group
+    exp = response_parser(response)
+
+    result = call_thunder(ctrl, exp)
+
+    return result
+
 
 # call api
-def call_api(url, params):
-    return
+def call_api(url, params, method):
+    request = api_method(method)
+    res = requests.Response()
+
+    if method == 'post':
+        headers = {'Content-Type': 'application/json; charset=utf-8'}
+        res = request(url, data=params, headers=headers)
+    elif method == 'get':
+        res = request(url, params=params)
+
+    # except - res is None
+    return res
+
+
+def response_parser(response: requests.Response):
+    # except - response is None or not requests.Response
+    return {
+        'body': response.json(),
+        'status': response.status_code
+    }
+
+
+def api_method(method):
+    return requests.post if method == 'post' else requests.get
+
 
 def call_thunder(ctrl, exp):
     ctrl_group = parse_response_type(ctrl)
@@ -24,6 +61,7 @@ def call_thunder(ctrl, exp):
     }
 
     return result
+
 
 def parse_response_type(response):
     result = {}
@@ -46,8 +84,10 @@ def parse_response_type(response):
     # response type setting
     return [result] if res_type == list else result
 
+
 def compare_type(ctrl, exp):
     return type(ctrl) == type(exp)
+
 
 def compare_responses(ctrl, exp):
     result = {}

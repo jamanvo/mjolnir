@@ -15,10 +15,14 @@
     <div class="container col-md-12">
         <div class="input-area">
             <div class="url col-md-12">
-                <input type="text" class="url-input col-md-9 pull-left" id="url" placeholder="Insert URL to Test">
+                <input type="text" class="url-input col-md-8 pull-left" id="url" placeholder="Insert URL to Test">
+                <div class="col-md-2">
+                    <input type="radio" name="method" value="get" checked="checked"> GET
+                    <input type="radio" name="method" value="post"> POST
+                </div>
                 <button type="submit" class="btn btn-default col-md-2 pull-right" onclick="sendRequest()">전송</button>
             </div>
-            <div class="message col-md-12"></div>
+            <div class="message col-md-12" id="message"></div>
         </div>
         <div class="json-container col-md-12">
             <div class="json-box pull-left">
@@ -39,12 +43,17 @@
 
 <script>
     function sendRequest() {
+        let msg_area = $("#message");
         let ctrlGroup = $("#ctrl-group").val();
         let callURL = $("#url").val();
         let args = $("#args").val();
         let url = '/smash';
+        let method = $(":input[name=method]:checked").val();
 
-        checkParams(ctrlGroup, args);
+        msg_area.hide()
+        if (!checkParams(method, ctrlGroup, args, msg_area)) {
+            return
+        };
 
         let params = {
             ctrl_group: ctrlGroup,
@@ -53,7 +62,7 @@
         };
 
         $.ajax({
-            type: 'POST',
+            type: method,
             url: url,
             data: params,
             dataType: 'json'
@@ -62,15 +71,23 @@
             .fail()
     }
 
-    function checkParams(ctrlGroup, args) {
-        if (!IsJsonString(ctrlGroup) || ctrlGroup === '') {
-            alert("Control Group could not parse to JSON");
-            return
+    function checkParams(method, ctrlGroup, args, msg_area) {
+        if (method !== 'get' && (!IsJsonString(ctrlGroup) || ctrlGroup === '')) {
+            setMessageText(msg_area, "Control Group could not parse to JSON");
+            return false
         }
 
         if (!IsJsonString(args) || args === '') {
-            alert("API Arguments could not parse to JSON");
+            setMessageText(msg_area, "API Arguments could not parse to JSON");
+            return false
         }
+
+        return true
+    }
+
+    function setMessageText(msg_area, msg) {
+        msg_area.show();
+        msg_area.text(msg);
     }
 
     function IsJsonString(str) {

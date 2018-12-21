@@ -64,7 +64,7 @@ def test_compare_type():
     ctrl = 1
     exp = 2
 
-    assert hammer.compare_type(ctrl, exp) == True
+    assert hammer.compare_type(ctrl, exp) is True
 
 
 def test_parse_response_type():
@@ -72,8 +72,36 @@ def test_parse_response_type():
 
     assert result == ctrl_dict
 
+
 def test_compare_response():
     exp = hammer.parse_response_type(exp_dict)
     result = hammer.compare_responses(ctrl_dict, exp)
 
     assert result == result_dict
+
+
+def test_api_method():
+    method = 'post'
+    request = hammer.api_method(method)
+
+    assert callable(request) is True
+
+
+def test_api_call():
+    # get
+    url = 'http://localhost:5000/health_check'
+    method = 'get'
+    params = {}
+
+    res = hammer.call_api(url, params, method)
+
+    assert res.status_code == 200
+
+    # post
+    method = 'post'
+    params = {'body': 'test'}
+
+    res = hammer.call_api(url, params, method)
+
+    assert res.status_code == 200
+    assert res.json()['body'] is not None
