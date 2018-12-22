@@ -91,7 +91,7 @@ def test_api_call():
     # get
     url = 'http://localhost:5000/health_check'
     method = 'get'
-    params = {}
+    params = {'body': 'test'}
 
     res = hammer.call_api(url, params, method)
 
@@ -99,7 +99,6 @@ def test_api_call():
 
     # post
     method = 'post'
-    params = {'body': 'test'}
 
     res = hammer.call_api(url, params, method)
 

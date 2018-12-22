@@ -18,19 +18,14 @@ def main():
 
 @app.route('/smash', methods=['POST'])
 def smash():
-    req_body = request.json
+    req_body = request.values
     url = req_body['url']
-    params = req_body['data']
+    params = req_body['args']
     ctrl = req_body['ctrl_group']
     method = request.method
 
-    if method == 'GET':
-        pass
-    elif method == 'POST':
-        pass
-
-    smash(url, params, ctrl, method)
-    return jsonify('')
+    result = hammer.smash(url, params, ctrl, method)
+    return jsonify(result)
 
 
 @app.route('/health_check', methods=['GET', 'POST'])
@@ -38,10 +33,11 @@ def health_check():
     response = {
         'message': 'Success'
     }
+
     if request.method == 'GET':
         return jsonify(response)
     elif request.method == 'POST':
-        body = request.json
+        body = request.values
         response['body'] = body
         return jsonify(response)
 

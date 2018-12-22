@@ -64,3 +64,8 @@ body {
 .compare-result .json-area {
     height: 300px;
 }
+
+.json-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

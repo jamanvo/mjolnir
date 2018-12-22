@@ -5,7 +5,7 @@ import json
 
 # start to compare
 def smash(url, params, ctrl, method):
-    args = json.loads(params) if method == 'post' else {}
+    args = json.loads(params) if params != '' else {}
 
     # control data parse
     ctrl = json.loads(ctrl)
@@ -15,7 +15,7 @@ def smash(url, params, ctrl, method):
     # set api response to experiment group
     exp = response_parser(response)
 
-    result = call_thunder(ctrl, exp)
+    result = call_thunder(ctrl, exp, response)
 
     return result
 
@@ -25,10 +25,10 @@ def call_api(url, params, method):
     request = api_method(method)
     res = requests.Response()
 
-    if method == 'post':
+    if method == 'POST':
         headers = {'Content-Type': 'application/json; charset=utf-8'}
         res = request(url, data=params, headers=headers)
-    elif method == 'get':
+    elif method == 'GET':
         res = request(url, params=params)
 
     # except - res is None
@@ -37,25 +37,27 @@ def call_api(url, params, method):
 
 def response_parser(response: requests.Response):
     # except - response is None or not requests.Response
-    return {
-        'body': response.json(),
-        'status': response.status_code
-    }
+    try:
+        return response.json()
+    except json.decoder.JSONDecodeError:
+        return None
 
 
 def api_method(method):
     return requests.post if method == 'post' else requests.get
 
 
-def call_thunder(ctrl, exp):
+def call_thunder(ctrl, exp, response):
     ctrl_group = parse_response_type(ctrl)
     exp_group = parse_response_type(exp)
     compare_result = compare_responses(ctrl_group, exp_group)
 
     result = {
         "result": {
-            "parsed_ctrl": ctrl_group,
-            "parsed_exp": exp_group,
+            "api_result": response.json(),
+            "status_code": response.status_code,
+            "parsed_ctrl": type_to_string(ctrl_group),
+            "parsed_exp": type_to_string(exp_group),
             "compare_result": compare_result
         }
     }
@@ -104,8 +106,32 @@ def compare_responses(ctrl, exp):
             if isinstance(ctrl[key], list) or isinstance(ctrl[key], dict):
                 result[key] = compare_responses(ctrl[key], exp[key])
             else:
+                print(ctrl, exp);
                 result[key] = compare_type(ctrl[key], exp[key])
     else:
         result = compare_type(ctrl, exp)
 
+    return [result] if res_type == list else result
+
+
+def type_to_string(dic):
+    result = {}
+    res_type = type(dic)
+
+    print(dic)
+    if res_type == list:
+        dic = dic[0]
+
+    if dic == dict:
+        keys = dic.keys()
+
+        for key in keys:
+            if dic[key] == list or dic[key] == dict:
+                result[key] = parse_response_type(dic[key])
+            else:
+                result[key] = str(dic[key])
+    else:
+        result = str(dic)
+
+    # response type setting
     return [result] if res_type == list else result

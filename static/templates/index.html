@@ -34,8 +34,15 @@
                 <textarea class="json-area col-md-12" id="ctrl-group" placeholder="Insert JSON to comparison"></textarea>
             </div>
         </div>
-        <div class="compare-result col-md-12">
-            <textarea class="json-area col-md-12" id="result" placeholder="Compare Result"></textarea>
+        <div class="json-container col-md-12">
+            <div class="json-box pull-left">
+                <div class="json-title col-md-12">API Response</div>
+                <textarea class="json-area col-md-12" id="result" placeholder="API Response" readonly="readonly"></textarea>
+            </div>
+            <div class="json-box pull-left">
+                <div class="json-title col-md-12">Response Compare Result</div>
+                <textarea class="json-area col-md-12" id="result-compare" placeholder="Response Compare Result" readonly="readonly"></textarea>
+            </div>
         </div>
     </div>
 </body>
@@ -50,10 +57,10 @@
         let url = '/smash';
         let method = $(":input[name=method]:checked").val();
 
-        msg_area.hide()
+        msg_area.hide();
         if (!checkParams(method, ctrlGroup, args, msg_area)) {
             return
-        };
+        }
 
         let params = {
             ctrl_group: ctrlGroup,
@@ -62,22 +69,31 @@
         };
 
         $.ajax({
-            type: method,
+            type: 'POST',
             url: url,
             data: params,
             dataType: 'json'
         })
-            .done()
-            .fail()
+            .done((data) => {
+                let apiResultArea = $("#result");
+                let compareArea = $("#result-compare");
+
+                setResponse(apiResultArea, data.result.api_result);
+                setResponse(compareArea, data.result.compare_result);
+            })
+    }
+
+    function setResponse(obj, data) {
+        obj.text(JSON.stringify(data, null, 4))
     }
 
     function checkParams(method, ctrlGroup, args, msg_area) {
-        if (method !== 'get' && (!IsJsonString(ctrlGroup) || ctrlGroup === '')) {
+        if ((!IsJsonString(ctrlGroup) || ctrlGroup === '')) {
             setMessageText(msg_area, "Control Group could not parse to JSON");
             return false
         }
 
-        if (!IsJsonString(args) || args === '') {
+        if (!IsJsonString(args)) {
             setMessageText(msg_area, "API Arguments could not parse to JSON");
             return false
         }
@@ -91,11 +107,14 @@
     }
 
     function IsJsonString(str) {
-    try {
-        JSON.parse(str);
-    } catch (e) {
-        return false
+        if (str.length === 0) {
+            return true
+        }
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false
+        }
+        return true
     }
-    return true
-}
 </script>
